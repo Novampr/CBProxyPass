@@ -13,6 +13,7 @@ import org.cloudburstmc.protocol.bedrock.packet.UnknownPacket;
 import org.cloudburstmc.protocol.common.PacketSignal;
 import org.cloudburstmc.proxypass.ProxyPass;
 import org.cloudburstmc.proxypass.network.bedrock.util.TestUtils;
+import org.cloudburstmc.proxypass.ui.UIPacketData;
 
 @Getter
 @Log4j2
@@ -34,7 +35,11 @@ public class ProxyClientSession extends BedrockClientSession implements ProxySes
     @Override
     protected void onPacket(BedrockPacketWrapper wrapper) {
         BedrockPacket packet = wrapper.getPacket();
+
+        if (proxyPass.isBlockedPacket(packet.getClass())) return; // Just don't send it
+
         player.logger.logPacket(this, packet, false);
+        player.getExtraLogHandler().accept(wrapper, UIPacketData.Direction.S2C);
         if (proxyPass.getConfiguration().isPacketTesting()) {
             TestUtils.testPacket(this, wrapper);
         }

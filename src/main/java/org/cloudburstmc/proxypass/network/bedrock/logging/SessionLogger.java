@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import org.cloudburstmc.protocol.bedrock.BedrockSession;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.cloudburstmc.proxypass.ProxyPass;
+import org.cloudburstmc.proxypass.network.bedrock.session.ProxyPlayerSession;
 import org.jose4j.json.internal.json_simple.JSONObject;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectWriter;
@@ -37,6 +38,8 @@ public class SessionLogger {
 
     private static final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
+    private final ProxyPlayerSession session;
+
     private final ProxyPass proxy;
 
     private final Path dataPath;
@@ -45,7 +48,8 @@ public class SessionLogger {
 
     private final Deque<String> logBuffer = new ArrayDeque<>();
 
-    public SessionLogger(ProxyPass proxy, Path sessionsDir, String displayName, long timestamp) {
+    public SessionLogger(ProxyPlayerSession session, ProxyPass proxy, Path sessionsDir, String displayName, long timestamp) {
+        this.session = session;
         this.proxy = proxy;
         this.dataPath = sessionsDir.resolve(displayName + '-' + timestamp);
         this.logPath = dataPath.resolve("packets.log");

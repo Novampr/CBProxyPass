@@ -2,6 +2,7 @@ package org.cloudburstmc.proxypass;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.cloudburstmc.proxypass.network.bedrock.util.LogTo;
 
@@ -17,6 +18,7 @@ import java.util.Collections;
 import java.util.Set;
 
 @Getter
+@Setter
 @ToString
 public class Configuration {
 
@@ -31,9 +33,20 @@ public class Configuration {
     private int maxClients = 0;
     @JsonProperty("log-to")
     private LogTo logTo = LogTo.FILE;
+    @JsonProperty("ignore-resource-packs")
+    private boolean ignoreResourcePacks = false;
 
     @JsonProperty("ignored-packets")
     private Set<String> ignoredPackets = Collections.emptySet();
+    @JsonProperty("blocked-packets")
+    private Set<String> blockedPackets = Collections.emptySet();
+
+    @JsonProperty("online-mode")
+    private boolean onlineMode = true;
+    @JsonProperty("save-auth-details")
+    private boolean saveAuthDetails = true;
+    @JsonProperty("default-account-name")
+    private String defaultAccountName = "";
 
     public static Configuration load(Path path) throws IOException {
         try (BufferedReader reader = Files.newBufferedReader(path)) {
@@ -59,6 +72,13 @@ public class Configuration {
 
         InetSocketAddress getAddress() {
             return new InetSocketAddress(host, port);
+        }
+
+        public static Address from(InetSocketAddress address) {
+            Address a = new Address();
+            a.host = address.getHostName();
+            a.port = address.getPort();
+            return a;
         }
     }
 }

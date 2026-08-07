@@ -223,6 +223,7 @@ gradle-app.setting
 
 # ProxyPass
 run/
+auth.json
 config.yml
 logs/
 logs/*

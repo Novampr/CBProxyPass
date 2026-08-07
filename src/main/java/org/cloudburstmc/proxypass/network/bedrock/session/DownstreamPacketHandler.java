@@ -82,7 +82,7 @@ public class DownstreamPacketHandler implements BedrockPacketHandler {
 
     @Override
     public PacketSignal handle(StartGamePacket packet) {
-        if (ProxyPass.CODEC.getProtocolVersion() < 776) {
+        if (ProxyPass.CLIENT_CODEC.getProtocolVersion() < 776) {
             List<DataEntry> itemData = new ArrayList<>();
 
             LinkedHashMap<String, Integer> legacyItems = new LinkedHashMap<>();
@@ -155,7 +155,7 @@ public class DownstreamPacketHandler implements BedrockPacketHandler {
             itemData.add(new DataEntry(item.getIdentifier(), item.getRuntimeId(), item.getVersion().ordinal(), item.isComponentBased()));
         }
 
-        if (ProxyPass.CODEC.getProtocolVersion() >= 776) {
+        if (ProxyPass.CLIENT_CODEC.getProtocolVersion() >= 776) {
             SimpleDefinitionRegistry.Builder<ItemDefinition> builder = SimpleDefinitionRegistry.<ItemDefinition>builder()
                     .add(new SimpleItemDefinition("minecraft:empty", 0, false));
 

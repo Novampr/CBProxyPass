@@ -33,6 +33,10 @@ dependencies {
     implementation(libs.common)
     implementation(libs.jansi)
     implementation(libs.jline.reader)
+    implementation(libs.flatlaf)
+    implementation(libs.flatlaf.intellij)
+    implementation(libs.minecraftauth)
+    implementation(libs.zxing)
 }
 
 application {
