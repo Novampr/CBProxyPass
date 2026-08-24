@@ -123,7 +123,7 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
     }
 
     private void initializeProxySession() {
-        log.debug("Initializing proxy session");
+        log.info("Initializing proxy session for {}", this.session.getSocketAddress());
 
         this.proxy.newClient(this.proxy.getTargetAddress(), downstream -> {
             downstream.setCodec(ProxyPass.CLIENT_CODEC);

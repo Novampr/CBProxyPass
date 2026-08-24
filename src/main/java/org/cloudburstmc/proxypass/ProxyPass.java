@@ -11,8 +11,6 @@ import io.netty.util.ResourceLeakDetector;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import net.lenni0451.commons.httpclient.HttpClient;
-import net.raphimc.minecraftauth.MinecraftAuth;
 import org.cloudburstmc.nbt.*;
 import org.cloudburstmc.netty.channel.raknet.RakChannelFactory;
 import org.cloudburstmc.netty.channel.raknet.config.RakChannelOption;
@@ -232,8 +230,6 @@ public class ProxyPass {
     }
 
     public void newClient(InetSocketAddress socketAddress, Consumer<ProxyClientSession> sessionConsumer) {
-        log.info("Player logged in with IP {}", socketAddress);
-
         Channel channel = new Bootstrap()
                 .group(this.eventLoopGroup)
                 .channelFactory(RakChannelFactory.client(NioDatagramChannel.class))
@@ -247,6 +243,7 @@ public class ProxyPass {
 
                     @Override
                     protected void initSession(ProxyClientSession session) {
+                        log.info("Player logged in with IP {}", session.getSocketAddress());
                         sessionConsumer.accept(session);
                     }
                 })
