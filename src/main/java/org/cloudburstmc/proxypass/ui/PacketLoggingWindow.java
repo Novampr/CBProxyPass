@@ -155,7 +155,7 @@ public class PacketLoggingWindow extends JFrame {
                 ));
             });
 
-            SouthBarComponent southBar = new SouthBarComponent(ProxyPass.BASE_CODEC, configuration, packetList::addFilter, (packsEnabled, blockPackets) -> {
+            SouthBarComponent southBar = new SouthBarComponent(proxyPass, ProxyPass.CODEC, configuration, packetList::addFilter, (packsEnabled, blockPackets) -> {
                 this.updateConfig(
                         null, null, null, null,
                         null, null, packsEnabled, null, blockPackets

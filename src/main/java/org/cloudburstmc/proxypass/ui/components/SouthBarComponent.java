@@ -18,8 +18,8 @@ import java.util.function.Supplier;
 public class SouthBarComponent extends JTabbedPane {
     private final List<Tab> tabs = new ArrayList<>();
 
-    public SouthBarComponent(BedrockCodec codec, Configuration configuration, Consumer<Predicate<UIPacketData>> predicateConsumer, BiConsumer<Boolean, Set<String>> updateHandler) {
-        this.tabs.add(new Filters(codec, configuration, predicateConsumer));
+    public SouthBarComponent(ProxyPass proxyPass, BedrockCodec codec, Configuration configuration, Consumer<Predicate<UIPacketData>> predicateConsumer, BiConsumer<Boolean, Set<String>> updateHandler) {
+        this.tabs.add(new Filters(proxyPass, codec, configuration, predicateConsumer));
         this.tabs.add(new Blocks(codec, configuration, updateHandler));
 
         for (Tab tab : this.tabs) {
@@ -37,9 +37,9 @@ public class SouthBarComponent extends JTabbedPane {
     private static class Filters extends Tab {
         private final FilterComponent component;
 
-        public Filters(BedrockCodec codec, Configuration configuration, Consumer<Predicate<UIPacketData>> predicateConsumer) {
+        public Filters(ProxyPass proxyPass, BedrockCodec codec, Configuration configuration, Consumer<Predicate<UIPacketData>> predicateConsumer) {
             this.setLayout(new GridLayout(1, 1));
-            this.component = new FilterComponent(codec, configuration, predicateConsumer);
+            this.component = new FilterComponent(proxyPass, codec, configuration, predicateConsumer);
         }
 
         @Override

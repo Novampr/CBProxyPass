@@ -1,5 +1,6 @@
 package org.cloudburstmc.proxypass.ui.components;
 
+import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.proxypass.ui.UIPacketData;
 
 import javax.swing.*;
@@ -9,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+@Slf4j
 public class PacketListComponent extends JTable {
     private final List<UIPacketData> items = new CopyOnWriteArrayList<>();
     private Predicate<UIPacketData> filter = packet -> true;

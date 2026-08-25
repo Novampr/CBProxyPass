@@ -28,7 +28,7 @@ public class JHintTextField extends JTextField {
 
             FontMetrics fm = g2.getFontMetrics();
             int x = getInsets().left;
-            int y = fm.getAscent() + getInsets().top;
+            int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
 
             g2.drawString(hint, x, y);
             g2.dispose();

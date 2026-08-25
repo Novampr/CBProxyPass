@@ -8,7 +8,7 @@ public class JLabelledNumberSpinner extends JPanel {
     private final SpinnerNumberModel model;
 
     public JLabelledNumberSpinner(String label, int min, int max, int def, int step) {
-        model = new SpinnerNumberModel(min, max, def, step);
+        model = new SpinnerNumberModel(def, min, max, step);
 
         this.setLayout(new GridLayout(1, 2, 2, 2));
 

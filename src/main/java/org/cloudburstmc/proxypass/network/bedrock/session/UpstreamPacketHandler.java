@@ -3,8 +3,6 @@ package org.cloudburstmc.proxypass.network.bedrock.session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.raphimc.minecraftauth.bedrock.model.MinecraftMultiplayerToken;
-import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
-import org.cloudburstmc.protocol.bedrock.data.EncodingSettings;
 import org.cloudburstmc.protocol.bedrock.data.PacketCompressionAlgorithm;
 import org.cloudburstmc.protocol.bedrock.data.auth.AuthPayload;
 import org.cloudburstmc.protocol.bedrock.data.auth.AuthType;
@@ -12,14 +10,12 @@ import org.cloudburstmc.protocol.bedrock.data.auth.CertificateChainPayload;
 import org.cloudburstmc.protocol.bedrock.data.auth.TokenPayload;
 import org.cloudburstmc.protocol.bedrock.packet.*;
 import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult;
-import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult.IdentityClaims;
 import org.cloudburstmc.protocol.bedrock.util.EncryptionUtils;
 import org.cloudburstmc.protocol.common.PacketSignal;
 import org.cloudburstmc.proxypass.ProxyPass;
 import org.cloudburstmc.proxypass.auth.Account;
 import org.cloudburstmc.proxypass.auth.AuthData;
 import org.cloudburstmc.proxypass.network.bedrock.util.ForgeryUtils;
-import org.cloudburstmc.proxypass.network.bedrock.util.SkinUtils;
 import org.jose4j.json.JsonUtil;
 import org.jose4j.json.internal.json_simple.JSONObject;
 import org.jose4j.jws.JsonWebSignature;
@@ -72,7 +68,7 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
             session.sendPacketImmediately(status);
             return PacketSignal.HANDLED;
         }
-        session.setCodec(ProxyPass.SERVER_CODEC);
+        session.setCodec(ProxyPass.CODEC);
 
         NetworkSettingsPacket networkSettingsPacket = new NetworkSettingsPacket();
         networkSettingsPacket.setCompressionThreshold(0);
@@ -126,7 +122,7 @@ public class UpstreamPacketHandler implements BedrockPacketHandler {
         log.info("Initializing proxy session for {}", this.session.getSocketAddress());
 
         this.proxy.newClient(this.proxy.getTargetAddress(), downstream -> {
-            downstream.setCodec(ProxyPass.CLIENT_CODEC);
+            downstream.setCodec(ProxyPass.CODEC);
 
             downstream.setSendSession(this.session);
             this.session.setSendSession(downstream);

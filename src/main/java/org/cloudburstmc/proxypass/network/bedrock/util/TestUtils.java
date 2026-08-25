@@ -34,7 +34,7 @@ public class TestUtils {
     public static void testPacket(BedrockSession session, BedrockPacketWrapper wrapper) {
         BedrockPacket packet = wrapper.getPacket();
         if (!(packet instanceof UnknownPacket)) {
-            int packetId = ProxyPass.BASE_CODEC.getPacketDefinition(packet.getClass()).getId();
+            int packetId = ProxyPass.CODEC.getPacketDefinition(packet.getClass()).getId();
             ByteBuf buffer = ByteBufAllocator.DEFAULT.ioBuffer();
             ByteBuf originalBuffer = wrapper.getPacketBuffer();
             // Get packet buffer without header.
@@ -42,7 +42,7 @@ public class TestUtils {
                     originalBuffer.readableBytes() - wrapper.getHeaderLength());
             try {
                 BedrockCodecHelper helper = session.getPeer().getCodecHelper();
-                ProxyPass.BASE_CODEC.tryEncode(helper, buffer, packet);
+                ProxyPass.CODEC.tryEncode(helper, buffer, packet);
                 boolean packetFailed = false;
                 if (!IGNORE_BUFFER_TEST.contains(packet.getClass()) && !originalBuffer.equals(buffer)) {
                     // Something went wrong in serialization.
@@ -50,7 +50,7 @@ public class TestUtils {
                             packet.getClass().getSimpleName(), ByteBufUtil.hexDump(originalBuffer), ByteBufUtil.hexDump(buffer));
                 }
 
-                BedrockPacket packet2 = ProxyPass.BASE_CODEC.tryDecode(helper, buffer, packetId);
+                BedrockPacket packet2 = ProxyPass.CODEC.tryDecode(helper, buffer, packetId);
                 if (!Objects.equals(packet, packet2)) {
                     // Something went wrong in serialization.
                     log.warn("Packet's instances not equal:\n Original  : {}\nRe-encoded : {}",

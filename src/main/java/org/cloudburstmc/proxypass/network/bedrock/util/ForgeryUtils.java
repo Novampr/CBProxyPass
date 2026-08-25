@@ -7,7 +7,6 @@ import org.cloudburstmc.protocol.bedrock.data.auth.AuthPayload;
 import org.cloudburstmc.protocol.bedrock.data.auth.AuthType;
 import org.cloudburstmc.protocol.bedrock.data.auth.CertificateChainPayload;
 import org.cloudburstmc.protocol.bedrock.data.auth.TokenPayload;
-import org.cloudburstmc.protocol.bedrock.util.ChainValidationResult.IdentityData;
 import org.cloudburstmc.proxypass.ProxyPass;
 import org.cloudburstmc.proxypass.auth.Account;
 import org.cloudburstmc.proxypass.auth.AuthData;
@@ -73,7 +72,7 @@ public class ForgeryUtils {
     }
 
     public static AuthPayload forgeOnlineAuthData(BedrockAuthManager authManager, ECPublicKey mojangPublicKey) throws InvalidJwtException, JoseException {
-        if (ProxyPass.CLIENT_CODEC.getProtocolVersion() > 924) {
+        if (ProxyPass.CODEC.getProtocolVersion() > 924) {
             return new TokenPayload(authManager.getMinecraftMultiplayerToken().getCached().getToken(), AuthType.FULL);
         }
 
@@ -105,7 +104,7 @@ public class ForgeryUtils {
 
         List<String> chain = List.of(selfSignedJwt, mcChain.getMojangJwt(), mcChain.getIdentityJwt());
 
-        if (ProxyPass.CLIENT_CODEC.getProtocolVersion() < 818) {
+        if (ProxyPass.CODEC.getProtocolVersion() < 818) {
             return new CertificateChainPayload(chain, AuthType.FULL);
         } else {
             return new TokenPayload(authManager.getMinecraftMultiplayerToken().getCached().getToken(), AuthType.FULL);
@@ -134,7 +133,7 @@ public class ForgeryUtils {
 
         HashMap<String,Object> overrideData = new HashMap<>();
         overrideData.put("DeviceId", account.authManager().getDeviceId().toString().replace("-", ""));
-        if (ProxyPass.CLIENT_CODEC.getProtocolVersion() < 944) {
+        if (ProxyPass.CODEC.getProtocolVersion() < 944) {
             // Chain is no longer sent in v944 and above, so it should no longer be possible for a server to detect that auth was from android
             overrideData.put("DeviceOS", 1); // Android per MinecraftAuth 4.0
         }

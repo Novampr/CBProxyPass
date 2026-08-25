@@ -57,7 +57,7 @@ public class PacketViewerComponent extends JTabbedPane {
         @Override
         public void addContent() {
             UIPacketData packet = PacketViewerComponent.this.currentPacket;
-            BedrockPacketDefinition<?> definition = ProxyPass.BASE_CODEC.getPacketDefinition(packet.packet().getClass());
+            BedrockPacketDefinition<?> definition = ProxyPass.CODEC.getPacketDefinition(packet.packet().getClass());
 
             Map<String, String> data = new LinkedHashMap<>();
             data.put("Packet Name", packet.packet().getClass().getSimpleName());

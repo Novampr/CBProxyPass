@@ -77,19 +77,13 @@ public class ProxyPass {
 
     public static final BedrockCodec BASE_CODEC = Bedrock_v2168.CODEC;
 
-    public static final BedrockCodec CLIENT_CODEC = BASE_CODEC.toBuilder()
+    public static final BedrockCodec CODEC = BASE_CODEC.toBuilder()
             .helper(() -> {
                 BedrockCodecHelper helper = BASE_CODEC.createHelper();
-                helper.setEncodingSettings(EncodingSettings.CLIENT);
+                helper.setEncodingSettings(EncodingSettings.UNLIMITED);
                 return helper;
             }).build();
-    public static final BedrockCodec SERVER_CODEC = CLIENT_CODEC.toBuilder()
-            .helper(() -> {
-                BedrockCodecHelper helper = BASE_CODEC.createHelper();
-                helper.setEncodingSettings(EncodingSettings.SERVER);
-                return helper;
-            }).build();
-    public static final int PROTOCOL_VERSION = CLIENT_CODEC.getProtocolVersion();
+    public static final int PROTOCOL_VERSION = CODEC.getProtocolVersion();
 
     private static final BedrockPong ADVERTISEMENT = new BedrockPong()
             .edition("MCPE")
@@ -127,7 +121,7 @@ public class ProxyPass {
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .build();
 
-        MINECRAFT_VERSION = CLIENT_CODEC.getMinecraftVersion();
+        MINECRAFT_VERSION = CODEC.getMinecraftVersion();
     }
 
     private final AtomicBoolean running = new AtomicBoolean(true);
@@ -223,7 +217,7 @@ public class ProxyPass {
                 .bind(this.proxyAddress)
                 .awaitUninterruptibly()
                 .channel();
-        log.info("Bedrock server {} ({}) started on {}", MINECRAFT_VERSION, ProxyPass.CLIENT_CODEC.getProtocolVersion(), proxyAddress);
+        log.info("Bedrock server {} ({}) started on {}", MINECRAFT_VERSION, ProxyPass.CODEC.getProtocolVersion(), proxyAddress);
 
         running.set(true);
         loop();
@@ -233,7 +227,7 @@ public class ProxyPass {
         Channel channel = new Bootstrap()
                 .group(this.eventLoopGroup)
                 .channelFactory(RakChannelFactory.client(NioDatagramChannel.class))
-                .option(RakChannelOption.RAK_PROTOCOL_VERSION, ProxyPass.CLIENT_CODEC.getRaknetProtocolVersion())
+                .option(RakChannelOption.RAK_PROTOCOL_VERSION, ProxyPass.CODEC.getRaknetProtocolVersion())
                 .handler(new BedrockChannelInitializer<ProxyClientSession>() {
 
                     @Override

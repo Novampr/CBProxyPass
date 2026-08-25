@@ -10,7 +10,6 @@ import net.raphimc.minecraftauth.msa.service.impl.DeviceCodeMsaAuthService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cloudburstmc.proxypass.Configuration;
-import org.jline.reader.*;
 
 import java.awt.*;
 import java.io.FileReader;
@@ -22,7 +21,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.function.Consumer;
 
-import static org.cloudburstmc.proxypass.ProxyPass.CLIENT_CODEC;
+import static org.cloudburstmc.proxypass.ProxyPass.CODEC;
 
 public class AuthHandler {
     private static final Logger log = LogManager.getLogger(AuthHandler.class);
@@ -30,7 +29,7 @@ public class AuthHandler {
     private AuthHandler() {}
 
     private static final HttpClient CLIENT = MinecraftAuth.createHttpClient();
-    public static final BedrockAuthManager.Builder AUTH_MANAGER = BedrockAuthManager.create(CLIENT, CLIENT_CODEC.getMinecraftVersion());
+    public static final BedrockAuthManager.Builder AUTH_MANAGER = BedrockAuthManager.create(CLIENT, CODEC.getMinecraftVersion());
     private static final Gson GSON = new GsonBuilder()
             .create();
 
@@ -113,12 +112,12 @@ public class AuthHandler {
 
     private static Account selectAccountCli(JsonArray accounts, String defaultAccountName) throws Exception {
         JsonObject fallbackObj = accounts.get(0).getAsJsonObject();
-        Account fallback = new Account(fallbackObj, CLIENT, CLIENT_CODEC.getMinecraftVersion());
+        Account fallback = new Account(fallbackObj, CLIENT, CODEC.getMinecraftVersion());
 
         if (defaultAccountName == null) return fallback;
 
         for (JsonElement account : accounts) {
-            if (getAccountName(account.getAsJsonObject()).equals(defaultAccountName)) return new Account(account.getAsJsonObject(), CLIENT, CLIENT_CODEC.getMinecraftVersion());
+            if (getAccountName(account.getAsJsonObject()).equals(defaultAccountName)) return new Account(account.getAsJsonObject(), CLIENT, CODEC.getMinecraftVersion());
         }
 
         return fallback;
@@ -127,7 +126,7 @@ public class AuthHandler {
     @SneakyThrows
     public static Account fromObject(JsonObject object) {
         if (object == null) return null;
-        return new Account(object, CLIENT, CLIENT_CODEC.getMinecraftVersion());
+        return new Account(object, CLIENT, CODEC.getMinecraftVersion());
     }
 
     public static String getAccountName(JsonObject object) {

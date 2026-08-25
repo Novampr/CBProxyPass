@@ -1,8 +1,10 @@
 package org.cloudburstmc.proxypass.ui.components;
 
+import lombok.extern.slf4j.Slf4j;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.cloudburstmc.proxypass.Configuration;
+import org.cloudburstmc.proxypass.ProxyPass;
 import org.cloudburstmc.proxypass.ui.UIPacketData;
 import org.cloudburstmc.proxypass.ui.components.swing.JLabelledNumberSpinner;
 
@@ -13,7 +15,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+@Slf4j
 public class FilterComponent extends JPanel {
+    private final ProxyPass proxyPass;
     private final Consumer<Predicate<UIPacketData>> predicateConsumer;
     private final PacketSelectListComponent packetSelectListComponent;
     private final JCheckBox whitelistMode;
@@ -22,8 +26,9 @@ public class FilterComponent extends JPanel {
     private final JCheckBox s2cEnabled;
     private final JCheckBox c2sEnabled;
 
-    public FilterComponent(BedrockCodec codec, Configuration configuration, Consumer<Predicate<UIPacketData>> predicateConsumer) {
+    public FilterComponent(ProxyPass proxyPass, BedrockCodec codec, Configuration configuration, Consumer<Predicate<UIPacketData>> predicateConsumer) {
         this.setLayout(new BorderLayout());
+        this.proxyPass = proxyPass;
         this.predicateConsumer = predicateConsumer;
 
         packetSelectListComponent = new PacketSelectListComponent(codec, configuration.getIgnoredPackets(), false, this::updatePredicate);
@@ -47,11 +52,11 @@ public class FilterComponent extends JPanel {
         c2sEnabled.addActionListener(e -> updatePredicate());
         extraFilters.add(c2sEnabled);
 
-        minByteCount = new JLabelledNumberSpinner("Minimum Byte Count: ", 0, 0, Integer.MAX_VALUE, 1);
+        minByteCount = new JLabelledNumberSpinner("Minimum Byte Count: ", 0, Integer.MAX_VALUE, 0, 1);
         minByteCount.setAlignmentX(Component.LEFT_ALIGNMENT);
         extraFilters.add(minByteCount);
 
-        maxByteCount = new JLabelledNumberSpinner("Maximum Byte Count: ", 500000, 0, Integer.MAX_VALUE, 1);
+        maxByteCount = new JLabelledNumberSpinner("Maximum Byte Count: ", 0, Integer.MAX_VALUE, 500000, 1);
         maxByteCount.setAlignmentX(Component.LEFT_ALIGNMENT);
         extraFilters.add(maxByteCount);
 
@@ -72,15 +77,15 @@ public class FilterComponent extends JPanel {
         this.add(packetSelectListComponent, BorderLayout.CENTER);
         this.add(extraFilters, BorderLayout.EAST);
 
-        this.updatePredicate();
+        updatePredicate();
     }
 
-    private void updatePredicate() {
+    public void updatePredicate() {
         Set<Class<? extends BedrockPacket>> selectedPackets = packetSelectListComponent.getSelectedPackets();
         int minBytes = (int) minByteCount.getModel().getValue();
         int maxBytes = (int) maxByteCount.getModel().getValue();
-        boolean s2cValid = s2cEnabled.isValid();
-        boolean c2sValid = c2sEnabled.isValid();
+        boolean s2cValid = s2cEnabled.isSelected();
+        boolean c2sValid = c2sEnabled.isSelected();
 
         predicateConsumer.accept(packet -> {
             if (whitelistMode.isSelected()) {
