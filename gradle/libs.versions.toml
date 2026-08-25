@@ -1,5 +1,5 @@
 [versions]
-protocol = "3.0.0.Beta13-20260729.224915-5"
+protocol = "3.0.0.Beta13-20260820.124150-16"
 jackson = "3.2.0"
 flatlaf = "3.6"
 

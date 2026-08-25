@@ -18,7 +18,7 @@ import org.cloudburstmc.protocol.bedrock.BedrockPeer;
 import org.cloudburstmc.protocol.bedrock.BedrockPong;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodecHelper;
-import org.cloudburstmc.protocol.bedrock.codec.v2168.Bedrock_v2168;
+import org.cloudburstmc.protocol.bedrock.codec.v2169.Bedrock_v2169;
 import org.cloudburstmc.protocol.bedrock.data.EncodingSettings;
 import org.cloudburstmc.protocol.bedrock.data.definitions.BlockDefinition;
 import org.cloudburstmc.protocol.bedrock.netty.BedrockPacketWrapper;
@@ -75,7 +75,7 @@ public class ProxyPass {
 
     public static final String MINECRAFT_VERSION;
 
-    public static final BedrockCodec BASE_CODEC = Bedrock_v2168.CODEC;
+    public static final BedrockCodec BASE_CODEC = Bedrock_v2169.CODEC;
 
     public static final BedrockCodec CODEC = BASE_CODEC.toBuilder()
             .helper(() -> {

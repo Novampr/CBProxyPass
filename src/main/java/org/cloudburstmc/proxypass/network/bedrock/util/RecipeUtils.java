@@ -30,7 +30,7 @@ public class RecipeUtils {
         List<PotionMixDataEntry> potions = new ArrayList<>();
         List<ContainerMixDataEntry> containers = new ArrayList<>();
 
-        for (RecipeData recipe : packet.getCraftingData()) {
+        for (RecipeData recipe : getRecipes(packet)) {
             CraftingDataEntry entry = new CraftingDataEntry();
 
             CraftingDataType type = recipe.getType();
@@ -114,14 +114,7 @@ public class RecipeUtils {
                 entry.input = smithingInput;
             }
 
-            // Since v975 (1.26.20) furnace recipes are encoded as shapeless recipes, retained here for backwards compatibility
-            if (recipe instanceof FurnaceRecipeData furnaceRecipe) {
-                Integer damage = furnaceRecipe.getInputData();
-                if (damage == 0x7fff) damage = -1;
-                if (damage == 0) damage = null;
-                entry.input = new Item(furnaceRecipe.getInputId(), ProxyPass.legacyIdMap.get(furnaceRecipe.getInputId()), damage, null, null);
-                entry.output = itemFromNetwork(furnaceRecipe.getResult());
-            }
+            writeLegacyFurnaceRecipe(recipe, entry);
             entries.add(entry);
         }
 
@@ -146,6 +139,53 @@ public class RecipeUtils {
 
         Recipes recipes = new Recipes(ProxyPass.CODEC.getProtocolVersion(), entries, potions, containers);
         proxy.saveJson("recipes.json", recipes);
+    }
+
+    private static List<RecipeData> getRecipes(CraftingDataPacket packet) {
+        List<RecipeData> legacyRecipes = getLegacyRecipes(packet);
+        if (!legacyRecipes.isEmpty()) {
+            return legacyRecipes;
+        }
+
+        List<RecipeData> recipes = new ArrayList<>();
+        recipes.addAll(packet.getShapedData());
+        recipes.addAll(packet.getShapelessData());
+        recipes.addAll(packet.getMultiData());
+        recipes.addAll(packet.getShapelessUserData());
+        recipes.addAll(packet.getShapelessChemistryData());
+        recipes.addAll(packet.getShapedChemistryData());
+        recipes.addAll(packet.getSmithingTransformData());
+        recipes.addAll(packet.getSmithingTrimData());
+        return recipes;
+    }
+
+    @SuppressWarnings("deprecation")
+    private static List<RecipeData> getLegacyRecipes(CraftingDataPacket packet) {
+        return new ArrayList<>(packet.getCraftingData());
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void writeLegacyFurnaceRecipe(RecipeData recipe, CraftingDataEntry entry) {
+        if (recipe instanceof FurnaceRecipeData furnaceRecipe) {
+            Integer damage = furnaceRecipe.getInputData();
+            if (damage == 0x7fff) {
+                damage = -1;
+            }
+
+            if (damage == 0) {
+                damage = null;
+            }
+
+            entry.input = new Item(
+                    furnaceRecipe.getInputId(),
+                    ProxyPass.legacyIdMap.get(furnaceRecipe.getInputId()),
+                    damage,
+                    null,
+                    null
+            );
+
+            entry.output = itemFromNetwork(furnaceRecipe.getResult());
+        }
     }
 
     private static List<Item> writeItemArray(ItemData[] inputs) {
