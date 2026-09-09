@@ -89,10 +89,7 @@ public class AuthHandler {
 
     private static Account newAuthCli() throws Exception {
         BedrockAuthManager authManager = AUTH_MANAGER.login(DeviceCodeMsaAuthService::new, (Consumer<MsaDeviceCode>) msaDeviceCode -> {
-            URI verificationUri = URI.create(
-                    msaDeviceCode.getVerificationUri()
-                            + (URI.create(msaDeviceCode.getVerificationUri()).getQuery() != null ? '&' : '?') + "otc=" + msaDeviceCode.getUserCode()
-            );
+            URI verificationUri = URI.create(msaDeviceCode.getDirectVerificationUri());
 
             log.info("Go to {}", verificationUri);
             log.info("Enter code {}", msaDeviceCode.getUserCode());

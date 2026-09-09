@@ -1,9 +1,6 @@
 package org.cloudburstmc.proxypass.auth;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -12,10 +9,6 @@ import net.lenni0451.commons.httpclient.HttpClient;
 import net.lenni0451.commons.httpclient.HttpResponse;
 import net.lenni0451.commons.httpclient.requests.impl.GetRequest;
 import net.raphimc.minecraftauth.bedrock.BedrockAuthManager;
-import net.raphimc.minecraftauth.xbl.data.XblConstants;
-import net.raphimc.minecraftauth.xbl.model.XblTitleToken;
-import net.raphimc.minecraftauth.xbl.model.XblXstsToken;
-import net.raphimc.minecraftauth.xbl.request.XblXstsAuthorizeRequest;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -59,34 +52,7 @@ public class Account {
      * chain, so it is not cached alongside the other tokens on the auth manager.
      */
     public BufferedImage fetchGamerpic(int size) throws IOException {
-        XblTitleToken titleToken = authManager.getMsaApplicationConfig().isTitleClientId()
-                ? authManager.getXblTitleToken().getUpToDate()
-                : null;
-        XblXstsToken xstsToken = authManager.getHttpClient().executeAndHandle(new XblXstsAuthorizeRequest(
-                authManager.getXblDeviceToken().getUpToDate(),
-                authManager.getXblUserToken().getUpToDate(),
-                titleToken,
-                XblConstants.XBL_XSTS_RELYING_PARTY
-        ));
-
-        GetRequest settingsRequest = new GetRequest("https://profile.xboxlive.com/users/me/profile/settings?settings=GameDisplayPicRaw");
-        settingsRequest.setHeader("Authorization", xstsToken.getAuthorizationHeader());
-        settingsRequest.setHeader("x-xbl-contract-version", "3");
-        settingsRequest.setHeader("Accept", "application/json");
-        HttpResponse settingsResponse = authManager.getHttpClient().execute(settingsRequest);
-
-        JsonObject profileJson = JsonParser.parseString(settingsResponse.getContent().getAsString()).getAsJsonObject();
-        JsonArray settings = profileJson.getAsJsonArray("profileUsers").get(0).getAsJsonObject().getAsJsonArray("settings");
-        String gamerpicUrl = null;
-        for (JsonElement element : settings) {
-            JsonObject setting = element.getAsJsonObject();
-            if (setting.get("id").getAsString().equals("GameDisplayPicRaw")) {
-                gamerpicUrl = setting.get("value").getAsString();
-                break;
-            }
-        }
-        if (gamerpicUrl == null) return null;
-
+        String gamerpicUrl = authManager.getXboxUserProfile().getUpToDate().getSettings().getOrDefault("AppDisplayPicRaw", null);
         HttpResponse imageResponse = authManager.getHttpClient().execute(new GetRequest(gamerpicUrl + "&w=" + GAMERPIC_FETCH_SIZE));
         BufferedImage fullSize = ImageIO.read(new ByteArrayInputStream(imageResponse.getContent().getAsBytes()));
         return makeGamerpic(fullSize, size);
