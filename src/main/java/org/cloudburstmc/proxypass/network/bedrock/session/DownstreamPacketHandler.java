@@ -10,6 +10,7 @@ import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtMapBuilder;
 import org.cloudburstmc.nbt.util.stream.LittleEndianDataOutputStream;
 import org.cloudburstmc.protocol.bedrock.BedrockSession;
+import org.cloudburstmc.protocol.bedrock.data.BlockPropertyData;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import org.cloudburstmc.protocol.bedrock.data.definitions.BlockDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
@@ -22,6 +23,7 @@ import org.cloudburstmc.protocol.common.DefinitionRegistry;
 import org.cloudburstmc.protocol.common.PacketSignal;
 import org.cloudburstmc.protocol.common.SimpleDefinitionRegistry;
 import org.cloudburstmc.proxypass.ProxyPass;
+import org.cloudburstmc.proxypass.network.bedrock.util.ItemDefinitionRegistries;
 import org.cloudburstmc.proxypass.network.bedrock.util.NbtBlockDefinitionRegistry;
 import org.cloudburstmc.proxypass.network.bedrock.util.RecipeUtils;
 
@@ -133,6 +135,16 @@ public class DownstreamPacketHandler implements BedrockPacketHandler {
         this.session.getPeer().getCodecHelper().setBlockDefinitions(registry);
         player.getUpstream().getPeer().getCodecHelper().setBlockDefinitions(registry);
 
+        proxy.saveJson("block_properties.json", packet.getBlockProperties());
+        return PacketSignal.UNHANDLED;
+    }
+
+    @Override
+    public PacketSignal handle(VoxelShapesPacket packet) {
+        Map<String, Object> voxelShapes = new LinkedHashMap<>();
+        voxelShapes.put("names", packet.getNameMap());
+        voxelShapes.put("shapes", packet.getShapes());
+        proxy.saveJson("voxel_shapes.json", voxelShapes);
         return PacketSignal.UNHANDLED;
     }
 
@@ -156,16 +168,11 @@ public class DownstreamPacketHandler implements BedrockPacketHandler {
         }
 
         if (ProxyPass.CODEC.getProtocolVersion() >= 776) {
-            SimpleDefinitionRegistry.Builder<ItemDefinition> builder = SimpleDefinitionRegistry.<ItemDefinition>builder()
-                    .add(new SimpleItemDefinition("minecraft:empty", 0, false));
-
-
             for (DataEntry entry : itemData) {
                 ProxyPass.legacyIdMap.put(entry.id(), entry.name());
-                builder.add(new SimpleItemDefinition(entry.name(), entry.id(), false));
             }
 
-            SimpleDefinitionRegistry<ItemDefinition> itemDefinitions = builder.build();
+            DefinitionRegistry<ItemDefinition> itemDefinitions = ItemDefinitionRegistries.fromDefinitions(packet.getItems());
 
             this.session.getPeer().getCodecHelper().setItemDefinitions(itemDefinitions);
             player.getUpstream().getPeer().getCodecHelper().setItemDefinitions(itemDefinitions);

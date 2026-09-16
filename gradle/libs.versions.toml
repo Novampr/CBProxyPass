@@ -1,6 +1,6 @@
 [versions]
-protocol = "3.0.0.Beta13-20260820.124150-16"
-jackson = "3.2.0"
+protocol = "3.0.0.Beta13-20260907.175719-23"
+jackson = "3.2.2"
 flatlaf = "3.6"
 
 [libraries]
@@ -11,13 +11,13 @@ common = { group = "com.nukkitx", name = "common", version = "1.0.1-SNAPSHOT" }
 jackson-databind = { group = "tools.jackson.core", name = "jackson-databind", version.ref = "jackson" }
 jackson-dataformat-yaml = { group = "tools.jackson.dataformat", name = "jackson-dataformat-yaml", version.ref = "jackson" }
 jansi = { group = "org.fusesource.jansi", name = "jansi", version = "2.4.3" }
-jline-reader = { group = "org.jline", name = "jline-reader", version = "4.2.1" }
-lombok = { group = "org.projectlombok", name = "lombok", version = "1.18.46" }
-spotbugs-annotations = { group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.10.2" }
+jline-reader = { group = "org.jline", name = "jline-reader", version = "4.4.1" }
+lombok = { group = "org.projectlombok", name = "lombok", version = "1.18.48" }
+spotbugs-annotations = { group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.10.4" }
 flatlaf = { group = "com.formdev", name = "flatlaf", version.ref = "flatlaf" }
 flatlaf-intellij = { group = "com.formdev", name = "flatlaf-intellij-themes", version.ref = "flatlaf" }
 minecraftauth = { group = "net.raphimc", name = "MinecraftAuth", version = "5.0.2" }
 zxing = { group = "com.google.zxing", name = "core", version = "3.5.4" }
 
 [plugins]
-shadow = { id = "com.gradleup.shadow", version = "9.4.2" }
+shadow = { id = "com.gradleup.shadow", version = "9.6.1" }

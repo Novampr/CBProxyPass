@@ -27,6 +27,16 @@ public class DownstreamInitialPacketHandler implements BedrockPacketHandler {
     private final ProxyPlayerSession player;
     private final ProxyPass proxy;
     private final LoginPacket loginPacket;
+    private DownstreamPacketHandler downstreamPacketHandler;
+
+    @Override
+    public PacketSignal handlePacket(BedrockPacket packet) {
+        PacketSignal signal = BedrockPacketHandler.super.handlePacket(packet);
+        if (signal == PacketSignal.UNHANDLED && this.downstreamPacketHandler != null) {
+            return this.downstreamPacketHandler.handlePacket(packet);
+        }
+        return signal;
+    }
 
     @Override
     public PacketSignal handle(NetworkSettingsPacket packet) {
@@ -34,9 +44,11 @@ public class DownstreamInitialPacketHandler implements BedrockPacketHandler {
         log.info("Compression algorithm picked {}", packet.getCompressionAlgorithm());
 
         this.session.sendPacketImmediately(this.loginPacket);
+        this.downstreamPacketHandler = this.createDownstreamPacketHandler();
         return PacketSignal.HANDLED;
     }
 
+    @Override
     public PacketSignal handle(ServerToClientHandshakePacket packet) {
         try {
             JsonWebSignature jws = new JsonWebSignature();
@@ -55,8 +67,15 @@ public class DownstreamInitialPacketHandler implements BedrockPacketHandler {
         session.sendPacketImmediately(clientToServerHandshake);
 
 
-        this.session.setPacketHandler(new DownstreamPacketHandler(this.session, this.player, this.proxy));
+        this.session.setPacketHandler(this.createDownstreamPacketHandler());
         log.debug("Downstream connected");
         return PacketSignal.HANDLED;
+    }
+
+    private DownstreamPacketHandler createDownstreamPacketHandler() {
+        if (this.downstreamPacketHandler == null) {
+            this.downstreamPacketHandler = new DownstreamPacketHandler(this.session, this.player, this.proxy);
+        }
+        return this.downstreamPacketHandler;
     }
 }
